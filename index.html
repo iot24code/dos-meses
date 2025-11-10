@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dos meses y ya mi corazón te sabe de memoria</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Fuentes -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<!-- Confetti -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+/* 1 rem = 10px para cálculos rápidos */
+html { font-size: 10px; }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    text-align: center;
+    overflow-x: hidden;
+    font-size: 1.6rem; /* 16px base */
+}
+
+/* Título */
+h1 {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(3rem, 6vw, 5rem);
+    margin: 2rem auto 3rem;
+    color: #ff80aa;
+    text-shadow: 0 0 1.5rem #ff4da6;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    50% { transform: scale(1.03); }
+}
+
+/* Lluvia de corazones */
+.heart {
+    position: fixed;
+    top: -2rem;
+    color: rgba(255,0,100,.7);
+    font-size: 2rem;
+    animation: fall 5s linear infinite;
+    z-index: 1;
+}
+@keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); }
+}
+
+/* Botones acción */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 3rem auto;
+    flex-wrap: wrap;
+    padding: 0 1rem;
+}
+.action-buttons button {
+    padding: 1.5rem 3rem;
+    font-size: clamp(1.6rem, 2vw, 2rem);
+    border: .2rem solid #ff4d6d;
+    border-radius: 5rem;
+    background: rgba(255,77,109,.15);
+    color: #ff80aa;
+    cursor: pointer;
+    transition: .3s;
+    box-shadow: 0 0 1.5rem rgba(255,77,109,.4);
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+}
+.action-buttons button:hover {
+    background: #ff4d6d;
+    color: #fff;
+    transform: translateY(-.3rem);
+}
+
+/* Carrusel */
+.carousel-container {
+    max-width: 70rem;
+    margin: 3rem auto;
+    border-radius: 2.5rem;
+    overflow: hidden;
+    box-shadow: 0 0 2.5rem rgba(255,0,100,.6);
+}
+.carousel-item img {
+    height: 70vh;
+    object-fit: contain;
+    background: #0b0b1a;
+}
+
+/* Modales */
+.popup {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    background: linear-gradient(145deg,#2a2a3e,#16151f);
+    color: #fff;
+    padding: 3rem;
+    border-radius: 2rem;
+    width: 90vw;
+    max-width: 60rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    display: none;
+    opacity: 0;
+    transform: scale(.95);
+    transition: .3s;
+    z-index: 2000;
+}
+.popup.show {
+    display: block;
+    opacity: 1;
+    transform: scale(1);
+}
+.popup h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    color: #ff80aa;
+    margin-top: 0;
+}
+.popup p {
+    font-size: clamp(1.4rem, 1.8vw, 1.6rem);
+    line-height: 1.8;
+    text-align: justify;
+}
+.popup .signature {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(1.6rem, 2vw, 2rem);
+    text-align: right;
+    margin-top: 2rem;
+    color: #ff80aa;
+}
+.popup button,
+.quiz-button {
+    display: block;
+    margin: 2rem auto 0;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 1rem;
+    background: #ff4d6d;
+    color: #fff;
+    cursor: pointer;
+    font-size: clamp(1.4rem, 2vw, 1.6rem);
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+}
+
+/* Quiz interno */
+.quiz-title { font-family: 'Great Vibes', cursive; font-size: clamp(2.2rem, 4vw, 3rem); margin-bottom: 2rem; }
+.question { font-family: 'Dancing Script', cursive; font-size: clamp(1.8rem, 2.5vw, 2.2rem); margin-bottom: 2rem; }
+.options { display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem; }
+.option {
+    background: rgba(255,77,109,.15);
+    border: .2rem solid #ff4d6d;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: .3s;
+    font-size: clamp(1.4rem, 2vw, 1.6rem);
+}
+.option:hover { background: rgba(255,77,109,.3); transform: translateY(-.3rem); }
+.option.correct { background: rgba(76,175,80,.5); border-color: #4caf50; }
+.option.incorrect { background: rgba(244,67,54,.5); border-color: #f44336; }
+.quiz-result { font-family: 'Dancing Script', cursive; font-size: clamp(1.8rem, 3vw, 2.2rem); }
+.quiz-score { font-size: clamp(2rem, 4vw, 2.8rem); color: #ff80aa; margin: 1rem 0; }
+.quiz-message { font-size: clamp(1.4rem, 2vw, 1.6rem); line-height: 1.6; margin-bottom: 2rem; }
+
+/* Control música */
+#musicControl {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 10;
+    cursor: pointer;
+    background: rgba(0,0,0,.5);
+    padding: 1.2rem;
+    border-radius: 50%;
+    font-size: 2rem;
+    transition: background .3s;
+}
+#musicControl:hover { background: rgba(255,0,150,.7); }
+
+/* --- MÓVIL --- */
+@media (max-width: 768px) {
+    html { font-size: 11px; } /* 1 rem = 11px → texto base más grande */
+
+    .action-buttons { flex-direction: column; align-items: center; gap: 2rem; }
+    .action-buttons button {
+        width: 90vw;
+        max-width: 40rem;
+        font-size: 2.2rem;
+        padding: 2rem 0;
+        min-height: 6rem; /* WCAG 48px */
+    }
+
+    .carousel-item img { height: 45vh; }
+
+    /* Modal pantalla completa sin transform */
+    .popup {
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+        padding: 4rem 2.5rem;
+    }
+    .popup p,
+    .quiz-message { font-size: 2rem !important; line-height: 2; }
+    .popup button,
+    .quiz-button { font-size: 2rem; padding: 1.8rem 4rem; margin-top: 3rem; }
+    .option { font-size: 1.8rem; padding: 2rem; }
+}
+</style>
+</head>
+
+<body>
+    <h1>Dos meses y ya mi corazón te sabe de memoria</h1>
+
+    <!-- Música -->
+    <button id="musicControl">🎵</button>
+    <audio id="bgMusic" loop>
+        <source src="Kilometros.mp3" type="audio/mp3">
+    </audio>
+
+    <!-- Carrusel -->
+    <div class="carousel-container">
+        <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+            <div class="carousel-inner">
+                <div class="carousel-item active"><img src="1.jpg" class="d-block w-100" alt="Foto 1"></div>
+                <div class="carousel-item"><img src="2.jpg" class="d-block w-100" alt="Foto 2"></div>
+                <div class="carousel-item"><img src="8.jpg" class="d-block w-100" alt="Foto 8"></div>
+                <div class="carousel-item"><img src="4.jpg" class="d-block w-100" alt="Foto 4"></div>
+                <div class="carousel-item"><img src="10.jpg" class="d-block w-100" alt="Foto 10"></div>
+                <div class="carousel-item"><img src="7.jpg" class="d-block w-100" alt="Foto 7"></div>
+                <div class="carousel-item"><img src="6.jpg" class="d-block w-100" alt="Foto 6"></div>
+                <div class="carousel-item"><img src="3.jpg" class="d-block w-100" alt="Foto 3"></div>
+                <div class="carousel-item"><img src="9.jpg" class="d-block w-100" alt="Foto 9"></div>
+                <div class="carousel-item"><img src="5.jpg" class="d-block w-100" alt="Foto 5"></div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="action-buttons">
+        <button onclick="openModal('thirdLetterPopup')">💌 Cuarta carta 💌</button>
+    </div>
+
+    <!-- Modal Quiz (se mantiene el código aunque no tenga botón para abrirlo) -->
+    <div class="popup" id="quizPopup">
+        <h2 class="quiz-title">💞 ¿Cuánto me conoces, amor?</h2>
+        <div id="quizBody"></div>
+    </div>
+
+    <!-- Modal Carta -->
+    <div class="popup" id="thirdLetterPopup">
+        <h2>Una carta para ti, mi amorcito</h2>
+        <p>Mi amorcito,</p>
+        <p>Han pasado casi dos meses desde que decidimos caminar juntos, y aunque el calendario dice sesenta días, para mi corazón han sido toda una vida aprendiendo a latir al compás del tuyo. En medio del ruido del mundo, de las voces que intentan entorpecer lo nuestro, encontramos un silencio profundo donde solo cabemos tú y yo —y ahí es donde he descubierto que la felicidad no es un destino, sino una decisión que tomamos cada mañana al abrir los ojos.</p>
+        <p>Sé que cada batalla te desgasta, que hay días donde las palabras de otros pesan más de lo que deberían. Quiero que sepas que cada lágrima que derramas por esa lucha me parte el alma, pero también me fortalece porque sé que no estás sola. No importa cuánta adversidad nos echen encima, mis brazos serán tu refugio, mi voz será tu escudo. Haré lo que sea, lo que sea necesario, para que el dolor que sientes hoy se convierta mañana solo en un recuerdo de lo lejos que hemos llegado.</p>
+        <p>Recuerdo cuando me diste la confianza de ser "papá" por un día. Aunque no son mis hijos de sangre, cada momento ayudándote sin esperar nada a cambio me enseñó lo que es amar sin condiciones. Ese paseo como familia, con las risas de los pequeños y tu mano en la mía, me mostró el futuro que quiero construir. Y luego estuvo esa noche —aquel concierto de nuestro cantante favorito donde por un instante dudé que pudiera suceder, pero lo logramos. Verte reír, verte brillar bajo las luces, sentir que esa felicidad era por mí, fue el momento más hermoso de mi existencia. Luego amanecimos abrazados, y en el calor de nuestros cuerpos encontré una intimidad que no se mide en horas, sino en latidos sincronizados.</p>
+        <p>Mi amor, todo lo que he logrado —cada paso, cada sonrisa, cada logro— lleva tu nombre escrito. No lo digo siempre, pero cada cosa que hago es impulsada por un amor tan grande que a veces me asusta. Tú eres el motor de mi vida, y sin ti nada de esto tendría sentido. Quiero construir contigo no solo días, sino décadas. Quiero que seas mi mujer, mi confidente, mi cómplice de madrugadas, mi todo. Quiero ser el dueño de tus risas y el escudo de tus tristezas hasta que mis pulmones no puedan más.</p>
+        <p>Y antes de irme, esa noche donde solo nos abrazamos sin más... Fue la más especial. Tu calor, tu respiración acariciando mi pecho, el latir de tu corazón contra el mío —fue más poderoso que cualquier intimidad. Fue tu amor diciéndome "vuelve pronto" sin pronunciar palabras. Sé que me extrañas, mi vida, y te juro que ese sentimiento es mutuo. Cada segundo lejos de ti es un segundo de más en el que mi alma te busca.</p>
+        <p>Pero volveré. En unas semanas estaré de vuelta a tu lado, donde pertenezco. Y cuando lo haga, prometo seguir construyendo este amor que es nuestro, ladrillo a ladrillo, contra viento y marea. Porque tú y yo somos un equipo, mi amor. Y los equipos que luchan juntos, permanecen juntos.</p>
+        <p>Te amo más de lo que mis palabras pueden expresar. Y seguiré amándote hasta el último aliento.</p>
+        <p>Vuelvo pronto para seguir haciéndote la mujer más feliz del mundo.</p>
+        <div class="signature">Con todo mi corazón,<br>Atte. Tu Amorcito</div>
+        <button onclick="closeModal('thirdLetterPopup')">Cerrar</button>
+    </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* Lluvia corazones */
+setInterval(() => {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.innerHTML = '❤️';
+    h.style.left = Math.random() * window.innerWidth + 'px';
+    h.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    h.style.opacity = Math.random();
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 5000);
+}, 300);
+
+/* Modales */
+function openModal(id) {
+    document.getElementById(id).classList.add('show');
+    if (id === 'quizPopup') startQuiz();
+}
+function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+}
+
+/* Quiz lógica (se mantiene el código aunque no tenga botón para abrirlo) */
+const questions = [
+    { question: "💍 ¿Cuál es la fecha de nuestro aniversario de novios?", options: [{ text: "10 de septiembre de 2025", correct: true }, { text: "11 de octubre de 2025", correct: false }, { text: "14 de febrero de 2025", correct: false }, { text: "25 de diciembre de 2025", correct: false }] },
+    { question: "💫 ¿Cuándo iniciamos nuestra historia de amor?", options: [{ text: "10 de septiembre de 2025", correct: false }, { text: "11 de octubre de 2025", correct: true }, { text: "1 de enero de 2025", correct: false }, { text: "20 de noviembre de 2025", correct: false }] },
+    { question: "🎨 ¿Cuál es mi color favorito?", options: [{ text: "Blanco", correct: true }, { text: "Celeste", correct: true }, { text: "Negro", correct: true }, { text: "Rojo", correct: true }], specialMessage: "Todos son correctos, porque me gusta todo lo que me recuerda a ti." },
+    { question: "🍽️ ¿Cuál es mi comida favorita?", options: [{ text: "Silpancho", correct: true }, { text: "Majadito", correct: true }, { text: "Pique macho", correct: true }, { text: "Guiso de lenteja", correct: true }] },
+    { question: "💬 ¿Qué tanto nos extrañamos cuando no estamos juntos?", options: [{ text: "5 de 10", correct: false }, { text: "7 de 10", correct: false }, { text: "9 de 10", correct: false }, { text: "10 de 10", correct: true }] }
+];
+
+let current = 0, score = 0, answered = false;
+
+function startQuiz() {
+    current = score = 0; answered = false;
+    showQ();
+}
+function showQ() {
+    answered = false;
+    const q = questions[current];
+    let html = `<div class="question">${q.question}</div><div class="options">`;
+    q.options.forEach((o, i) => html += `<div class="option" onclick="check(${i})">${o.text}</div>`);
+    html += `</div><button class="quiz-button" id="nextBtn" onclick="nextQ()" disabled>Siguiente</button>`;
+    document.getElementById('quizBody').innerHTML = html;
+}
+function check(i) {
+    if (answered) return;
+    answered = true;
+    const opts = document.querySelectorAll('.option');
+    const q = questions[current];
+    const ok = q.options[i].correct;
+    ok ? (opts[i].classList.add('correct'), score++) : (opts[i].classList.add('incorrect'), q.options.forEach((o, j) => o.correct && opts[j].classList.add('correct')));
+    if (q.specialMessage) {
+        const m = document.createElement('div');
+        m.className = 'quiz-message';
+        m.textContent = q.specialMessage;
+        document.getElementById('quizBody').appendChild(m);
+    }
+    document.getElementById('nextBtn').disabled = false;
+}
+function nextQ() {
+    current++;
+    current < questions.length ? showQ() : showRes();
+}
+function showRes() {
+    const pct = Math.round(score / questions.length * 100);
+    document.getElementById('quizBody').innerHTML =
+        `<div class="quiz-result">¡Quiz finalizado!</div><div class="quiz-score">${score}/${questions.length} (${pct}%)</div><div class="quiz-message">No importa la puntuación, lo importante es que me conoces y me aceptas. Te amo.</div><button class="quiz-button" onclick="closeModal('quizPopup')">Cerrar</button>`;
+    confetti({ particleCount: 150, spread: 120, origin: { y: .6 } });
+}
+
+/* Música */
+const music = document.getElementById('bgMusic'), btn = document.getElementById('musicControl');
+btn.onclick = () => {
+    music.paused ? (music.play(), btn.textContent = '🔇') : (music.pause(), btn.textContent = '🎵');
+};
+</script>
+</body>
+</html>
